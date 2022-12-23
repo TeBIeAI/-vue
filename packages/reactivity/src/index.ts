@@ -1,7 +1,7 @@
-import { shared } from "@vue/shared";
-
-const reactivity = {
-  name: "reactivity",
-};
-
-export { reactivity };
+// index 文件导出方法  不实现功能
+export {
+  reactive,
+  shallowReactive,
+  readonly,
+  shallowReadonly,
+} from "./reactive";
