@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="../node_modules/@vue/reactivity/dist/reactivity.global.js"></script>
+    <script>
+      console.log(VueReactivity);
+
+      const { reactive, readonly, shallowReadonly, shallowReactive, effect } =
+        VueReactivity;
+
+      const obj = reactive({
+        name: "韩超",
+        age: 19,
+        arr: [1, 2, 3],
+      });
+
+      effect(() => {
+        app.innerHTML = obj.name;
+        // app.innerHTML = obj.name + ", " + obj.age + ", " + obj.arr[2];
+        // obj.arr.length;
+      });
+
+      // effect(() => {
+      //   app.innerHTML = obj.name + ", " + obj.age;
+      // });
+
+      // 更改name属性  需要重新执行effect
+      setTimeout(() => {
+        obj.name = "你好";
+        // obj.xx = "000000";
+        // obj.arr.push(1111);
+        // obj.arr[1] = "sdasdsad";
+        // obj.arr.length = 1;
+        // obj.arr[100] = 1;
+      }, 1000);
+    </script>
+  </body>
+</html>

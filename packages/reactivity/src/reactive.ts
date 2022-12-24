@@ -30,7 +30,6 @@ const readonlyMap = new WeakMap();
 
 // 使用函数科里化 根据参数不同  处理不同
 export function createReactiveObject(target, isReadonly, baseHandlers) {
-  debugger;
   // 如果目标不是对象 将无法拦截  reactive->只能拦截对象
   if (!isObject(target)) {
     return target;
