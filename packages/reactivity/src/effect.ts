@@ -19,7 +19,7 @@ let activeEffect;
 const effectStack = [];
 function createReactiveEffect(fn, options) {
   const effect = function reactiveEffect() {
-    console.log("默认effect 先执行一次");
+    // console.log("默认effect 先执行一次");
 
     // 保证effect没有加入到effectstack
     if (!effectStack.includes(effect)) {
@@ -117,5 +117,12 @@ export function trigger(target, type, key?, newValue?, oldValue?) {
         break;
     }
   }
-  effects.forEach((effect: any) => effect());
+  effects.forEach((effect: any) => {
+    debugger;
+    if (effect.options.scheduler) {
+      effect.options.scheduler(effect);
+    } else {
+      effect();
+    }
+  });
 }

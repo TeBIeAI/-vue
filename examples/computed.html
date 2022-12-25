@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="../node_modules/@vue/reactivity/dist/reactivity.global.js"></script>
+    <script>
+      const {
+        reactive,
+        readonly,
+        shallowReadonly,
+        shallowReactive,
+        effect,
+        ref,
+        computed,
+      } = VueReactivity;
+
+      // const name = ref("韩超");
+      const number = ref(0);
+
+      const num = computed(() => {
+        return number.value + 10;
+      });
+
+      effect(() => {
+        console.log(num.value);
+      });
+
+      number.value = 100;
+
+      // console.log(num.value);
+    </script>
+  </body>
+</html>

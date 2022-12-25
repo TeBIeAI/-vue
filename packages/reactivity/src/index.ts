@@ -8,4 +8,6 @@ export {
 
 export { effect } from "./effect";
 
+export { computed } from "./computed";
+
 export { ref, shallowRef, toRef, toRefs } from "./ref";
