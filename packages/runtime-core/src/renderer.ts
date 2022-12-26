@@ -123,7 +123,6 @@ export function createRenderer(rendererOptions) {
 
   const pathKeyedChildren = (c1, c2, el) => {
     // 对特殊情况进行优化
-
     let i = 0; // 都是默认从头开始比对
     let e1 = c1.length - 1;
     let e2 = c2.length - 1;
@@ -192,14 +191,35 @@ export function createRenderer(rendererOptions) {
 
       // 去老的里面找  看有没有复用的
 
+      const tobePatched = e2 - s2 + 1;
+      const newIndexToOldIndexMap = new Array(tobePatched).fill(0);
+
       for (let i = s1; i <= e1; i++) {
         const oldVnode = c1[i];
         let newIndex = keyToNewIndexMap.get(oldVnode.key);
+
         if (newIndex === undefined) {
           // 老的不在新的
           unmount(oldVnode);
         } else {
+          // 新的和旧的关系， 索引的关系
+          newIndexToOldIndexMap[newIndex - s2] = i + 1;
           patch(oldVnode, c2[newIndex], el);
+        }
+      }
+
+      for (let i = tobePatched; i >= 0; i--) {
+        const currentIndex = s2 + i;
+        let child = c2[currentIndex];
+
+        let anthor =
+          currentIndex + 1 < c2.length ? c2[currentIndex + 1].el : null;
+
+        if (newIndexToOldIndexMap[i] === 0) {
+          // 如果自己是0  说明没有被patch过
+          patch(null, child, el, anthor);
+        } else {
+          hostInsert(child.el, el, anthor);
         }
       }
 
