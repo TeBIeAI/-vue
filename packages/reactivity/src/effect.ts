@@ -90,7 +90,6 @@ export function trigger(target, type, key?, newValue?, oldValue?) {
   if (key === "length" && isArray(target)) {
     // 如果对应的长度  有依赖收集  需要更新
     depsMap.forEach((dep, key) => {
-      console.log(depsMap, dep, key);
       if (key === "length" || key > newValue) {
         // 如果更改的长度  小于收集的索引  那么要触发effect重新执行
         // state.arr.length = 1
@@ -118,7 +117,6 @@ export function trigger(target, type, key?, newValue?, oldValue?) {
     }
   }
   effects.forEach((effect: any) => {
-    debugger;
     if (effect.options.scheduler) {
       effect.options.scheduler(effect);
     } else {

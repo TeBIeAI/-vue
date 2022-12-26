@@ -8,7 +8,7 @@ export const patchEvent = (el, key, value) => {
     // 需要绑定事件  而且还存在的情况下
     exists.value = value;
   } else {
-    const eventName = value.slice(2).toLowerCase();
+    const eventName = key.slice(2).toLowerCase();
     if (value) {
       // 要绑定事件 以前没有绑定过
       let invoker = (invokers[key] = createInvoder(value));

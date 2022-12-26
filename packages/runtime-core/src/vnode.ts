@@ -1,6 +1,10 @@
 import { isArray } from "./../../shared/src/index";
 import { isObject, isString, ShapeFlags } from "@vue/shared";
 
+export function isVnode(vnode) {
+  return vnode.__v_isVnode;
+}
+
 export function createVNode(type, props, children = null) {
   // 可以根据type判断是组件还是普通元素
 
@@ -15,6 +19,7 @@ export function createVNode(type, props, children = null) {
     __v_isVnode: true,
     props,
     type,
+    component: null, // 存放组件对应的实例
     children,
     key: props && props.key, // diff会用到key
     el: null, // 稍后会将虚拟节点和真是节点对应起来
@@ -37,4 +42,11 @@ function normalizeChildren(vnode, children) {
   }
 
   vnode.shapeFlag = vnode.shapeFlag | type;
+}
+
+export const Text = Symbol("text");
+export function normalizeVNode(child) {
+  if (isObject(child)) return child;
+
+  return createVNode(Text, null, String(child));
 }

@@ -10,12 +10,53 @@
     <script src="../node_modules/@vue/runtime-dom/dist/runtime-dom.global.js"></script>
     <div id="app"></div>
     <script>
-      console.log(VueRuntimeDOM);
-      const { createApp } = VueRuntimeDOM;
+      const { createApp, h, reactive } = VueRuntimeDOM;
 
       const App = {
-        render() {
-          console.log("App 的 render");
+        setup(props, ctx) {
+          const state = reactive({ name: "韩超1" });
+          const fn = () => {
+            state.name = "炒炒";
+            state.name = "炒炒1";
+            state.name = "炒炒2";
+          };
+
+          return (proxy) => {
+            return h(
+              "div",
+              {
+                style: { color: "red" },
+                onClick: () => {
+                  fn();
+                },
+              },
+              state.name
+              // ["hello world", h("span", "你好")]
+            );
+          };
+        },
+        render(proxy) {
+          console.log(proxy);
+          // console.log("App 的 render");
+          // h("div", { name: 111 });
+          // h("div", {}, "hello world");
+          // h("div", {}, h("span"));
+          // h("div", h("span"));
+          // h("div", [h("span"), h("span")]);
+          // h("div", null, h("span"), h("span"));
+          // h("div", null, "a", "b", "c");
+
+          // return h(
+          //   "div",
+          //   {
+          //     style: { color: "red" },
+          //     onClick: () => {
+          //       proxy.fn();
+          //     },
+          //   },
+          //   proxy.name
+          //   // ["hello world", h("span", "你好")]
+          // );
         },
       };
 

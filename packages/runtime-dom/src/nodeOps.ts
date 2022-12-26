@@ -8,9 +8,7 @@ export const nodeOps = {
     }
   },
 
-  insert: (child, parent, anchor = null) => {
-    parent.insetBefore(child, anchor);
-  },
+  insert: (child, parent, anchor = null) => parent.insertBefore(child, anchor),
 
   querySelector: (selector) => document.querySelector(selector),
 
@@ -19,4 +17,6 @@ export const nodeOps = {
   createText: (text) => document.createTextNode(text),
 
   setText: (node, text) => (node.value = text),
+
+  nextSibling: (node) => node.nextSibling,
 };
