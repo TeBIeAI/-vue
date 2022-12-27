@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script src="../node_modules/@vue/runtime-dom/dist/runtime-dom.global.js"></script>
+    <div id="app"></div>
+    <script>
+      const {
+        createApp,
+        h,
+        reactive,
+        onBeforMount,
+        onMounted,
+        onBeforeUpdate,
+        onUpdate,
+        getCurrentInstance,
+      } = VueRuntimeDOM;
+
+      const App = {
+        setup(props, ctx) {
+          console.log(getCurrentInstance());
+          const state = reactive({ name: "韩超1" });
+          const fn = () => {
+            state.name = "炒炒2";
+          };
+
+          onBeforMount(() => {
+            console.log("onBeforMount");
+          });
+          onMounted(() => {
+            console.log("onMounted");
+          });
+          onBeforeUpdate(() => {
+            console.log("onBeforeUpdate");
+          });
+          onUpdate(() => {
+            console.log("onUpdate");
+          });
+
+          return (proxy) => {
+            return h(
+              "div",
+              {
+                style: { color: "red" },
+                onClick: () => {
+                  fn();
+                },
+              },
+              state.name
+            );
+          };
+        },
+      };
+
+      const app = createApp(App, { name: "韩超", age: 25 });
+      app.mount("#app");
+    </script>
+  </body>
+</html>

@@ -8,7 +8,9 @@ export const nodeOps = {
     }
   },
 
-  insert: (child, parent, anchor = null) => parent.insertBefore(child, anchor),
+  insert: (child, parent, anchor = null) => {
+    return parent.insertBefore(child, anchor);
+  },
 
   querySelector: (selector) => document.querySelector(selector),
 

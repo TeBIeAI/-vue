@@ -1,6 +1,7 @@
 import { effect } from "@vue/reactivity";
 import { ShapeFlags } from "@vue/shared";
 import { createAppAPI } from "./apiCreateApp";
+import { invokerArrFns } from "./apiLifecycle";
 import { createComponentInstance, setupComponent } from "./component";
 import { queueJob } from "./scheduler";
 import { normalizeVNode, Text } from "./vnode";
@@ -27,6 +28,11 @@ export function createRenderer(rendererOptions) {
     instance.update = effect(
       function componentEffect() {
         if (!instance.isMouted) {
+          let { bm, m } = instance;
+          if (bm) {
+            invokerArrFns(bm);
+          }
+
           // 初次渲染
           let proxyToUse = instance.proxy;
           let subTree = (instance.subTree = instance.render.call(
@@ -37,14 +43,26 @@ export function createRenderer(rendererOptions) {
           patch(null, subTree, container);
 
           instance.isMouted = true;
+          if (m) {
+            // mounted 要求我们必须子组件完成后  才会调用
+            invokerArrFns(m);
+          }
         } else {
           console.log("更新了");
+          let { bu, u } = instance;
+          if (bu) {
+            invokerArrFns(bu);
+          }
           // 更新逻辑
           // diff算法 （核心 diff + 序列化 watchAPI 生命周期）
           const prevTree = instance.subTree;
           let proxyToUse = instance.proxy;
           const nextTree = instance.render.call(proxyToUse, proxyToUse);
           patch(prevTree, nextTree, container);
+          if (u) {
+            // update 要求我们必须子组件完成后  才会调用
+            invokerArrFns(u);
+          }
         }
       },
       {
@@ -208,6 +226,9 @@ export function createRenderer(rendererOptions) {
         }
       }
 
+      let increasingNewIndexSequence = getSequence(newIndexToOldIndexMap);
+      let j = increasingNewIndexSequence.length - 1;
+
       for (let i = tobePatched; i >= 0; i--) {
         const currentIndex = s2 + i;
         let child = c2[currentIndex];
@@ -219,13 +240,68 @@ export function createRenderer(rendererOptions) {
           // 如果自己是0  说明没有被patch过
           patch(null, child, el, anthor);
         } else {
-          hostInsert(child.el, el, anthor);
+          if (i != increasingNewIndexSequence[j]) {
+            hostInsert(child.el, el, anthor);
+          } else {
+            j--;
+          }
         }
       }
 
       // 最后就是移动节点 并且将新增的节点插入
       // 最长递增子序列
     }
+  };
+
+  const getSequence = (arr) => {
+    const len = arr.length;
+    const result = [0];
+    const p = arr.slice(0);
+    let start, end, middle;
+
+    for (let i = 0; i < len; i++) {
+      const arrI = arr[i];
+      if (arrI !== 0) {
+        let resultLastIndex = result[result.length - 1];
+        if (arr[resultLastIndex] < arrI) {
+          // 当前的值比上一个人大  直接push 并且让当前值  记录他的前一个
+          p[i] = resultLastIndex;
+          result.push(i);
+          continue;
+        }
+
+        // 二分查找  找到比当前值大的哪一个
+        start = 0;
+        end = result.length - 1;
+
+        while (start < end) {
+          // 重合就说明找到了
+          middle = ((start + end) / 2) | 0; // 找到中间位置的前一个
+
+          if (arr[result[middle]] < arrI) {
+            start = middle + 1;
+          } else {
+            end = middle;
+          }
+        }
+        if (arrI < arr[result[start]]) {
+          if (start > 0) {
+            p[i] = result[start - 1];
+          }
+          result[start] = i;
+        }
+      }
+    }
+
+    let len1 = result.length;
+    let last = result[len1 - 1];
+    // 根据前驱节点  一个个向前查找
+    while (len1-- > 0) {
+      result[len1] = last;
+      last = p[last];
+    }
+
+    return result;
   };
 
   const unmountChildren = (children) => {
@@ -346,7 +422,6 @@ export function createRenderer(rendererOptions) {
   // core的核心
   const render = (vnode, container) => {
     // 根据不同的虚拟节点  创建对应的真实元素
-
     // 默认是调用render 因为可能为初始化
     patch(null, vnode, container);
   };

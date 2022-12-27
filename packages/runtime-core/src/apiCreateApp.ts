@@ -15,7 +15,6 @@ export function createAppAPI(render) {
         // 1 根据组件创建虚拟节点
         // 创建虚拟节点
         const vnode = createVNode(rootComponent, rootProps);
-
         // 2 将虚拟节点和容器获取到后调用render
         render(vnode, container);
 

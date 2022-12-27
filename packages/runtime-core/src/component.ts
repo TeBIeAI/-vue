@@ -39,6 +39,12 @@ export function setupComponent(instance) {
   }
 }
 
+export let currentInstance = null;
+export let setCurrentInstance = (instance) => {
+  currentInstance = instance;
+};
+export let getCurrentInstance = () => currentInstance;
+
 function setupStatefullComponent(instance) {
   // 1 代理  传递给render函数的参数
   instance.proxy = new Proxy(instance.ctx, PublicInstanceProxyHandlers as any);
@@ -48,9 +54,11 @@ function setupStatefullComponent(instance) {
   let { setup } = Component;
   // -----没有setup 没有render ? ----
   if (setup) {
+    currentInstance = instance;
     let setupContext = createSetupContext(instance);
     const setupResult = setup(instance.props, setupContext);
 
+    currentInstance = null;
     handleSetupResult(instance, setupResult);
   } else {
     // 完成组件的启动
